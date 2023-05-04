@@ -1,0 +1,234 @@
+
+<head>
+<title>State Records Royalty Payment Database</title>
+<link href="./css/style.css" rel="stylesheet" type="text/css" />
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="./js/delete_rate.js"></script>
+
+{{!--
+// Source for display script
+* Date Accessed: 10/23/2022
+* Copied From: OSU CS340 Week 6 Module - Project 3 - Example Code
+* Website: https://canvas.oregonstate.edu/courses/1890458/assignments/8930034?module_item_id=22339353
+--}}
+<script language="JavaScript">
+    function showform(dowhat) {
+        /*
+        * four DIVS: browse, insert, update, delete
+        * this function sets one visible the others not
+        */
+        if (dowhat == 'insert'){
+            document.getElementById('browse').style.display = 'none';
+            document.getElementById('insert').style.display = 'block';
+            document.getElementById('update').style.display = 'none';
+            document.getElementById('delete').style.display = 'none';
+        }
+        else if (dowhat == 'update'){
+            document.getElementById('browse').style.display = 'block';
+            document.getElementById('insert').style.display = 'none';
+            document.getElementById('update').style.display = 'block';
+            document.getElementById('delete').style.display = 'none';
+        }
+        else if (dowhat == 'delete'){
+            document.getElementById('browse').style.display = 'none';
+            document.getElementById('insert').style.display = 'none';
+            document.getElementById('update').style.display = 'none';
+            document.getElementById('delete').style.display = 'block';
+        }
+        else if (dowhat == 'all'){
+            document.getElementById('browse').style.display = 'block';
+            document.getElementById('insert').style.display = 'block';
+            document.getElementById('update').style.display = 'block';
+            document.getElementById('delete').style.display = 'none';
+        }
+        else { //by default display browse
+            document.getElementById('browse').style.display = 'block';
+            document.getElementById('insert').style.display = 'none';
+            document.getElementById('update').style.display = 'none';
+            document.getElementById('delete').style.display = 'none';
+        }
+    }
+    function newRate() { showform('insert'); }
+    function updateRate(pid) { showform('update'); }
+    function deleteRate(pid) { showform ('delete'); }
+    function browseRates() { showform ('browse'); }
+    function showAll() { showform ('all'); }
+</script>
+
+</head>
+
+<body onload="browseRates()">
+
+<h1 class="display-4" >State Records</h1>
+<h1 class="display-5" >Royalty Payment Database</h1>
+<h1 class="display-6" > Website functional on Google Chrome or Edge </h1>
+
+<nav class="navbar navbar-expand-lg bg-light">
+  <div class="container-fluid" >
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="bands.hbs">Bands</a>
+                </li>
+            <li class="nav-item">
+                <a class="nav-link" href="albums.hbs">Albums</a>
+                </li>
+            <li class="nav-item">
+                <a class="nav-link" href="songs.hbs">Songs</a>
+                </li>
+            <li class="nav-item">
+                <a class="nav-link" href="owners.hbs">Royalty Owners</a>
+                </li>
+            <li class="nav-item">
+                <a class="nav-link" href="types.hbs">Royalty Types</a>
+                </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="rates.hbs">Royalty Rates</a>
+            </li>
+        </ul>
+    </div>    
+  </div>      
+</nav>
+<br>
+
+<p><h1 class="display-6" style="text-align: center"><strong>Royalty Rates</strong></h1></p>
+
+<div id="browse" style="display: block">
+  
+ <p class="bands-button"><button class="btn btn-primary" href="#" onClick="showAll()">Display all forms</button> </p>
+  <br>
+  {{!-- Create a table --}}
+  <table id="rates-table">
+
+      {{!-- Header section --}}
+      <thead>
+
+          {{!-- For just the first row, we print each key of the row object as a header cell so we
+          know what each column means when the page renders --}}
+          <tr>
+              {{#each data.[0]}}
+              <th>
+                  {{@key}}
+              </th>
+              {{/each}}
+              <th>Edit</th>
+              <th>Delete</th>
+          </tr>
+      </thead>
+
+      {{!-- Body section --}}
+      <tbody>
+
+          {{!-- For each row, print the rate table details in order --}}
+          {{#each data}}
+          <tr data-value={{this.ID}}>
+              <td>{{this.ID}}</td>
+              <td>{{this.Song_Name}}</td>
+              <td>{{this.Royalty_Owner}}</td>
+              <td>{{this.Royalty_Type}}</td>
+              <td>{{this.Royalty_Rate}}</td>
+              <td><img src="./img/edit.png" width="18" height="18" onclick="updateRate({{this.ID}})" ></td>
+              <td><a href="rates.hbs"> <img src="./img/delete.png" width="18" height="18" onclick="deleteThisRate({{this.ID}})" ></a></td>
+          </tr>
+          {{/each}}
+      </tbody>
+  </table>
+
+  <br>
+  <p class="bands-button"><button class="btn btn-primary" onclick="newRate()">Add New Rate</button></p>
+  <br>
+</div>  
+
+<div class="card" id="insert" style="display: block;width: 80%; margin:auto">
+  <div class="card-body">
+    <h2>Add New Royalty Rate</h2>
+    <p>To add a new rate, please enter their information below and click `Submit`!</p>
+    <form id="add-rate-form" method="POST" action="/add-rate-form">
+        <label for="input-song_id">Song Name: </label>
+            <select class="form-select"  name="input-song_id" id="input-song_id">
+                <option value="test">Select a Song</option>
+                {{#each songs}}
+                <option value="{{this.song_id}}">{{this.song_name}}</option>
+                {{/each}}
+            </select><br><br>
+        <label for="input-royalty_owner_id">Royalty Owner Name: </label>
+            <select class="form-select"  name="input-royalty_owner_id" id="input-royalty_owner_id">
+                <option value="test">Select a Royalty Owner</option>
+                {{#each royalty_owners}}
+                <option value="{{this.royalty_owner_id}}">{{this.royalty_owner_name}}</option>
+                {{/each}}
+            </select><br><br>
+        <label for="input-royalty_type_id">Royalty Owner Type: </label>
+            <select class="form-select"  name="input-royalty_type_id" id="input-royalty_type_id">
+                <option value=NULL>Select a Royalty Type (None) </option>
+                {{#each royalty_types}}
+                <option value="{{this.royalty_type_id}}">{{this.royalty_type_name}}</option>
+                {{/each}}
+            </select>&nbsp;(Optional)<br><br> 
+        <label for="input-royalty_rate">Royalty Rate: </label>         
+            <input type="number" step="any" name="input-royalty_rate" id="input-royalty_rate" required><br><br>
+
+        <input class="btn btn-primary" type="submit" value="Submit">
+        <input class="btn btn-primary" type="button" value="Cancel" onClick="browseRates()">
+    </form>
+  </div>
+</div>
+
+<div id="delete" style="display: block">
+
+</div>
+
+<br>
+
+<div class="card" id="update" style="display: block;width: 80%; margin:auto">
+  <div class="card-body"> 
+    <h2>Update Royalty Rate</h2>
+        <p>To update a rate name select their name from the drop-down menu on the left and edit the text field.</p>
+            <form id="update-royalty_rate-ajax">
+            
+                <label for="select-song_name">Song Name: </label>
+                <br><br>
+                <select class="form-select"  name="select-song_name" id="select-song_name">
+                    <option value="test">Select a Song</option>
+                    {{#each data}}
+                    <option value="{{this.ID}}">{{this.Song_Name}}</option>
+                    {{/each}}
+                </select><br><br>
+                <label for="select-royalty_owner">Royalty Owner Name: </label>
+                <br><br>
+                <select class="form-select"  name="select-royalty_owner" id="select-royalty_owner">
+                    <option value="test">Select a Royalty Owner</option>
+                    {{#each royalty_owners}}
+                    <option value="{{this.royalty_owner_id}}">{{this.royalty_owner_name}}</option>
+                    {{/each}}
+                </select><br><br>
+                <label for="select-royalty_type">Royalty Owner Type: </label>
+                <br><br>
+                <select class="form-select"  name="select-royalty_type" id="select-royalty_type">
+                    <option value=NULL>Select a Royalty Type</option>
+                    {{#each royalty_types}}
+                    <option value="{{this.royalty_type_id}}">{{this.royalty_type_name}}</option>
+                    {{/each}}
+                </select>&nbsp;(Optional)<br><br> 
+                <label for="update-royalty_rate">Royalty Rate: </label>         
+                <input type="number" step="any" name="update-royalty_rate" id="update-royalty_rate"><br><br>
+
+                <input class="btn btn-primary" type="submit" value="Submit">
+                <input class="btn btn-primary" type="button" value="Cancel" onClick="browseRates()">
+            </form>
+  </div>
+</div>
+
+<p>&nbsp;</p>
+<script src="./js/update_royalty_rate.js"></script>
+<script>
+    function updateForm(id){
+        var id = id
+        console.log(id)
+        
+    }
+</script>
+</body>

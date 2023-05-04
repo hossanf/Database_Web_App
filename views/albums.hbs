@@ -1,0 +1,172 @@
+<html>
+<head>
+<title>State Records Royalty Payment Database</title>
+<link href="./css/style.css" rel="stylesheet" type="text/css" />
+
+{{!--
+// Source for display script
+* Date Accessed: 10/23/2022
+* Copied From: OSU CS340 Week 6 Module - Project 3 - Example Code
+* Website: https://canvas.oregonstate.edu/courses/1890458/assignments/8930034?module_item_id=22339353
+--}}
+<script language="JavaScript">
+    function showform(dowhat) {
+        /*
+        * four DIVS: browse, insert, update, delete
+        * this function sets one visible the others not
+        */
+        if (dowhat == 'insert'){
+            document.getElementById('browse').style.display = 'none';
+            document.getElementById('insert').style.display = 'block';
+            document.getElementById('update').style.display = 'none';
+            document.getElementById('delete').style.display = 'none';
+        }
+        else if (dowhat == 'update'){
+            document.getElementById('browse').style.display = 'none';
+            document.getElementById('insert').style.display = 'none';
+            document.getElementById('update').style.display = 'block';
+            document.getElementById('delete').style.display = 'none';
+        }
+        else if (dowhat == 'delete'){
+            document.getElementById('browse').style.display = 'none';
+            document.getElementById('insert').style.display = 'none';
+            document.getElementById('update').style.display = 'none';
+            document.getElementById('delete').style.display = 'block';
+        }
+        else if (dowhat == 'all'){
+            document.getElementById('browse').style.display = 'block';
+            document.getElementById('insert').style.display = 'block';
+            document.getElementById('update').style.display = 'block';
+            document.getElementById('delete').style.display = 'block';
+        }
+        else { //by default display browse
+            document.getElementById('browse').style.display = 'block';
+            document.getElementById('insert').style.display = 'none';
+            document.getElementById('update').style.display = 'none';
+            document.getElementById('delete').style.display = 'none';
+        }
+    }
+function newAlbum() { showform('insert'); }
+function updateAlbum(pid) { showform('update'); }
+function deleteAlbum(pid) { showform ('delete'); }
+function browseAlbums() { showform ('browse'); }
+function showAll() { showform ('all'); }
+</script>
+
+</head>
+
+<body onload="browseAlbums()">
+
+<h1 class="display-4" >State Records</h1>
+<h1 class="display-5" >Royalty Payment Database</h1>
+<h1 class="display-6" > Website functional on Google Chrome or Edge </h1>
+
+
+<nav class="navbar navbar-expand-lg bg-light">
+  <div class="container-fluid" >
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="bands.hbs">Bands</a>
+                </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="albums.hbs">Albums</a>
+                </li>
+            <li class="nav-item">
+                <a class="nav-link" href="songs.hbs">Songs</a>
+                </li>
+            <li class="nav-item">
+                <a class="nav-link" href="owners.hbs">Royalty Owners</a>
+                </li>
+            <li class="nav-item">
+                <a class="nav-link" href="types.hbs">Royalty Types</a>
+                </li>
+            <li class="nav-item">
+                <a class="nav-link" href="rates.hbs">Royalty Rates</a>
+            </li>
+        </ul>
+    </div>    
+  </div>      
+</nav>
+ 
+<br>
+
+<p><h1 class="display-6" style="text-align: center"><strong>Albums</strong></h1></p>
+
+<div id="browse" style="display: block">
+  <p class="bands-button"><button class="btn btn-primary" href="#" onClick="showAll()">Display all forms</button> </p>
+  <br>
+  {{!-- Create a table --}}
+  <table id="albums-table">
+
+      {{!-- Header section --}}
+      <thead>
+
+          {{!-- For just the first row, we print each key of the row object as a header cell so we
+          know what each column means when the page renders --}}
+          <tr>
+            {{#each data.[0]}}
+            <th>
+                {{@key}}
+            </th>
+            {{/each}}
+          </tr>
+      </thead>
+
+      {{!-- Body section --}}
+      <tbody>
+
+          {{!-- For each row, print the album_id, album_name, in order --}}
+          {{#each data}}
+          <tr>
+              <td>{{this.album_id}}</td>
+              <td>{{this.band_name}}</td>
+              <td>{{this.album_name}}</td>
+              <td>{{this.release_date}}</td>
+          </tr>
+          {{/each}}
+      </tbody>
+  </table>
+
+  <br>
+  <div class="bands-button"><button class="btn btn-primary" onclick="newAlbum()">Add New Album</button></div>
+  
+</div>
+
+<br>
+<div class="card" id="insert" style="display: block;width: 80%; margin:auto">
+  <div class="card-body">
+    <h2>Add New Album</h2>
+    <p>To add a new album, please enter their information below and click `Submit`!</p>
+    <form id="add-album-form" method="POST" action="/add-album-form">
+        <label for="input-band_id"><strong>Band Name: </strong></label>
+            <br><br>
+            <select class="form-select" style="width:20rem" name="input-band_id" id="input-band_id">
+            <option value="test">Select a Band</option>
+            {{#each bands}}
+            <option value="{{this.band_id}}">{{this.band_name}}</option>
+            {{/each}}
+            </select><br>
+        <label for="input-album_name"><strong>Album Name: </strong> </label>
+        <input type="text" name="input-album_name" id="input-album_name" required><br><br>
+        <label><strong>Release Date: </strong></label> 
+        <input type="date" name="input-release_date" id="input-release_date" required><br><br>
+        <input class="btn btn-primary" type="submit" value="Submit">
+        <button class="btn btn-primary" type="button" value="Cancel" onClick="browseAlbums()">Cancel</button>
+    </form>
+ </div>
+</div><!-- insert -->
+<p>&nbsp;</p>
+<div id="update">
+</div><!-- update -->
+
+
+<div id="delete">
+</div><!-- delete -->
+
+
+</body>
+</html>

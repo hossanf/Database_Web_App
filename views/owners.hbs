@@ -1,0 +1,233 @@
+<html>
+<head>
+<link href="./css/style.css" rel="stylesheet" type="text/css" />
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+{{!--
+// Source for display script
+* Date Accessed: 10/23/2022
+* Copied From: OSU CS340 Week 6 Module - Project 3 - Example Code
+* Website: https://canvas.oregonstate.edu/courses/1890458/assignments/8930034?module_item_id=22339353
+--}}
+<script language="JavaScript">
+    function showform(dowhat) {
+        /*
+        * four DIVS: browse, insert, update, delete
+        * this function sets one visible the others not
+        */
+        if (dowhat == 'insert'){
+            document.getElementById('browse').style.display = 'none';
+            document.getElementById('insert').style.display = 'block';
+            document.getElementById('update').style.display = 'none';
+            document.getElementById('search').style.display = 'none';
+        }
+        else if (dowhat == 'update'){
+            document.getElementById('browse').style.display = 'none';
+            document.getElementById('insert').style.display = 'none';
+            document.getElementById('update').style.display = 'block';
+            document.getElementById('search').style.display = 'none';
+        }
+        else if (dowhat == 'search'){
+            document.getElementById('browse').style.display = 'none';
+            document.getElementById('insert').style.display = 'none';
+            document.getElementById('update').style.display = 'none';
+            document.getElementById('search').style.display = 'block';
+        }
+        else if (dowhat == 'all'){
+            document.getElementById('browse').style.display = 'block';
+            document.getElementById('insert').style.display = 'block';
+            document.getElementById('update').style.display = 'block';
+            document.getElementById('search').style.display = 'block';
+        }
+        else { //by default display browse
+            document.getElementById('browse').style.display = 'block';
+            document.getElementById('insert').style.display = 'none';
+            document.getElementById('update').style.display = 'none';
+            document.getElementById('search').style.display = 'none';
+        }
+    }
+function newRoyaltyOwner() { showform('insert'); }
+function updateRoyaltyOwner(pid) { showform('update'); }
+function searchRoyaltyOwner(pid) { showform ('search'); }
+function browseRoyaltyOwners() { showform ('browse'); }
+function showAll() { showform ('all'); }
+</script>
+
+</head>
+
+<body onload="browseRoyaltyOwners()">
+
+<h1 class="display-4" >State Records</h1>
+<h1 class="display-5" >Royalty Payment Database</h1>
+<h1 class="display-6" > Website functional on Google Chrome or Edge </h1>
+
+<nav class="navbar navbar-expand-lg bg-light">
+  <div class="container-fluid" >
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="bands.hbs">Bands</a>
+                </li>
+            <li class="nav-item">
+                <a class="nav-link" href="albums.hbs">Albums</a>
+                </li>
+            <li class="nav-item">
+                <a class="nav-link" href="songs.hbs">Songs</a>
+                </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="owners.hbs">Royalty Owners</a>
+                </li>
+            <li class="nav-item">
+                <a class="nav-link" href="types.hbs">Royalty Types</a>
+                </li>
+            <li class="nav-item">
+                <a class="nav-link" href="rates.hbs">Royalty Rates</a>
+            </li>
+        </ul>
+    </div>    
+  </div>      
+</nav>
+<br>
+
+<p><h1 class="display-6" style="text-align: center"><strong>Royalty Owners</strong></h1></p>
+<div id="browse">
+  <p class="bands-button"><button class="btn btn-primary" href="#" onClick="showAll()">Display all forms</button> 
+  <a href='/owners.hbs'><button class="btn btn-primary">Reset Search</button></a></p>
+  <br>
+  
+
+  {{!-- Create a table --}}
+  <table id="royalty_owners-table">
+
+      {{!-- Header section --}}
+      <thead>
+
+          {{!-- For just the first row, we print each key of the row object as a header cell so we
+          know what each column means when the page renders --}}
+          <tr>
+            {{#each data.[0]}}
+            <th>
+                {{@key}}
+            </th>
+            {{/each}}
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+      </thead>
+
+      {{!-- Body section --}}
+      <tbody>
+
+          {{!-- For each row, print the ownerid, owner_name, owner_address, owner_city,
+                                               owner_state, owner_zip in order --}}
+          {{#each data}}
+          <tr data-value={{this.ID}}>
+              <td>{{this.ID}}</td>
+              <td>{{this.Owner_Name}}</td>
+              <td>{{this.Owner_Address}}</td>
+              <td>{{this.Owner_City}}</td>
+              <td>{{this.Owner_State}}</td>
+              <td>{{this.Owner_Zip}}</td>
+              <td><img src="./img/edit.png" width="18" height="18" onclick="updateRoyaltyOwner({{this.ID}})" ></td>
+              <td><button onclick="deleteRoyaltyOwner({{this.ID}})"> <img src="./img/delete.png" width="18" height="18"></button</td> 
+          </tr>
+          {{/each}}
+      </tbody>
+  </table>
+  <br>
+  <p class="bands-button">
+  <button class="btn btn-primary" onclick="newRoyaltyOwner()">Add New Royalty Owner</button>
+  </p> <br>
+  <p class="bands-button">
+  <button class="btn btn-primary" onclick="searchRoyaltyOwner()">Search for a Royalty Owner</button>
+  </p>
+
+</div>
+
+<p>&nbsp;</p>
+
+<div class="card" id="insert" style="display: block;width: 80%; margin:auto">
+  <div class="card-body">
+    <form method="POST" id="add-royalty_owners-form" action="/add-royalty_owners-form">
+        <legend><strong>Add New Royalty Owner</strong></legend>
+          <fieldset class="fields">
+            <label> <strong>Owner Name:</strong></label> 
+              <input type="text" id="input-royalty_owners_name" name="input-royalty_owners_name"  size="30" required><br><br>
+            <label> <strong>Address:</strong> </label> 
+              <input type="text" id="input-royalty_owners_address" name="input-royalty_owners_address"  size="50" required><br><br>
+            <label> <strong>City:</strong> </label> 
+              <input type="text" id="input-royalty_owners_city" name="input-royalty_owners_city"  size="20" required><br><br>
+            <label> <strong>State:</strong> </label> 
+              <input type="text" id="input-royalty_owners_state" name="input-royalty_owners_state"  size="15" required><br><br>
+            <label> <strong>Zip:</strong> </label> 
+              <input type="text" id="input-royalty_owners_zip" name="input-royalty_owners_zip"  size="10" required><br><br>
+          </fieldset>
+        <input class="btn btn-primary" type="submit" value="Submit">
+        <input class="btn btn-primary" type="button" value="Cancel" onClick="browseRoyaltyOwners()">
+    </form> 
+  </div>
+</div><!-- insert -->
+
+<p>&nbsp;</p>
+
+<div class="card" id="search" style="display: block;width: 80%; margin:auto">
+  <div class="card-body">
+      <h2>Search For Royalty Owner</h2>
+      <p>Search by name using the field below. Partial names are OK too!</p>
+      <form id="search-person-html" method='GET' action='/owners.hbs'>
+          <label for="input-royalty_owner_name2">Search by Name: </label>
+          <input type="text" name="royalty_owner_name" id="input-royalty_owner_name-html-search">
+          
+          <input class="btn btn-primary" type="submit" value="Submit">
+          <a href='/owners.hbs'><button class="btn btn-primary">Cancel</button></a>
+      </form>
+      
+  </div>  
+</div><!-- search -->
+
+
+<p>&nbsp;</p>
+
+<div class="card" id="update" style="display: block;width: 80%; margin:auto">
+  <div class="card-body">
+    <h2>Update Royalty Owner</h2>
+      <p>To update owner information select their name from the drop-down menu on the left and edit the text fields.</p>
+      <form id="update-royalty_owner-ajax">
+        <fieldset class="fields">
+          <label for="mySelect"><strong>Select Royalty Owner to Update: </strong></label>
+          <br><br>
+          <select class="form-select"  name="mySelect" id="mySelect" onChange="updateForm({{this.ID}})">
+              <option value="test">Select a Royalty Owner</option>
+              {{#each data}}
+              <option value="{{this.ID}}">{{this.Owner_Name}}</option>
+              {{/each}}
+          </select><br><br>
+
+          <label for="input-royalty_owner-update"><strong>Royalty Owner Name: </strong></label>
+            <input type="text" name="input-royalty_owner-name-update" id="input-royalty_owner-name-update" size="30" required><br><br>
+          <label> <strong>Address:</strong> </label> 
+            <input type="text" id="input-royalty_owners_address-update" name="input-royalty_owners_address-update"  size="50" required><br><br>
+          <label> <strong>City:</strong> </label> 
+            <input type="text" id="input-royalty_owners_city-update" name="input-royalty_owners_city-update"  size="20" required><br><br>
+          <label> <strong>State:</strong> </label> 
+            <input type="text" id="input-royalty_owners_state-update" name="input-royalty_owners_state-update"  size="15" required><br><br>
+          <label> <strong>Zip:</strong> </label> 
+            <input type="text" id="input-royalty_owners_zip-update" name="input-royalty_owners_zip-update"  size="10" required><br><br>
+        </fieldset>
+
+
+          <input class="btn btn-primary" type="submit" value="Submit">
+          <input class="btn btn-primary" type="button" value="Cancel" onClick="browseRoyaltyOwners()">
+
+      </form>
+  </div>  
+</div><!-- update-->
+<p>&nbsp;</p>
+<script src="./js/update_royalty_owner.js"></script>
+<script src="./js/delete_royalty_owners.js"></script>
+
+</body>
+</html>
